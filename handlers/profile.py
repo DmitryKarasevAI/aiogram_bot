@@ -25,28 +25,28 @@ async def process_weight(message: Message, state: FSMContext):
 
 @router.message(SetUpForm.height)
 async def process_height(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    await state.update_data(height=message.text)
     await message.reply("Введите ваш возраст:")
     await state.set_state(SetUpForm.age)
 
 
 @router.message(SetUpForm.age)
 async def process_age(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    await state.update_data(age=message.text)
     await message.reply("Введите ваш пол (М/Ж):")
     await state.set_state(SetUpForm.sex)
 
 
 @router.message(SetUpForm.sex)
 async def process_sex(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    await state.update_data(sex=message.text)
     await message.reply("Сколько минут активности у вас в день?")
     await state.set_state(SetUpForm.active_time)
 
 
 @router.message(SetUpForm.active_time)
 async def process_active_time(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    await state.update_data(active_time=message.text)
     await message.reply("В каком городе вы находитесь?")
     await state.set_state(SetUpForm.city)
 
@@ -97,6 +97,11 @@ async def process_city(message: Message, state: FSMContext):
         "logged_calories": 0,
         "burned_calories": 0
     }
+
+    await message.reply(
+        "Ваша цель по калориям: {calorie_goal}\n"
+        "Ваша цель по воде: {water_goal}\n"
+    )
 
     await state.clear()
 
