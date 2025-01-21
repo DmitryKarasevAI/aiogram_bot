@@ -68,6 +68,7 @@ async def process_active_time(message: Message, state: FSMContext):
 
 @router.message(SetUpForm.city)
 async def process_city(message: Message, state: FSMContext):
+    await state.update_data(city=message.text)
     data = await state.get_data()
     weight = data.get("weight")
     height = data.get("height")
