@@ -26,14 +26,24 @@ router = Router()
 
 @router.message(Command("log_water"))
 async def start_form(message: Message, command: CommandObject):
-    amount = int(command.args)
-    users[message.from_user.id]["logged_water"] += amount
-    curr_amount = users[message.from_user.id]["logged_water"]
-    total_amount = users[message.from_user.id]["water_goal"]
-    await message.reply(
-        f"Вы выпили {amount} мл. воды\n"
-        f"Суммарно за сегодня Вы выпили {curr_amount}/{total_amount} мл."
-    )
+    if message.from_user.id not in users.keys():
+        await message.reply(
+            "Сначала создайте профиль!"
+        )
+    else:
+        try:
+            amount = int(command.args)
+            users[message.from_user.id]["logged_water"] += amount
+            curr_amount = users[message.from_user.id]["logged_water"]
+            total_amount = users[message.from_user.id]["water_goal"]
+            await message.reply(
+                f"Вы выпили {amount} мл. воды\n"
+                f"Суммарно за сегодня Вы выпили {curr_amount}/{total_amount} мл."
+            )
+        except TypeError:
+            await message.reply(
+                "Введите корректное количество воды в мл."
+            )
 
 
 # Функция для подключения обработчиков
