@@ -2,11 +2,25 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-import logging
 from config import WEATHER_API_TOKEN
 from states import SetUpForm
 from storage import users
 import aiohttp
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+console_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
 
 router = Router()
 
@@ -79,7 +93,7 @@ async def process_city(message: Message, state: FSMContext):
     # По формуле Миффлина — Сан Жеора:
     calorie_goal = int(round(10 * weight + 6.25 * height - 5 * age + 5 * (sex == 'М') - 161 * (sex == 'Ж')))
 
-    logging.info(f'{data}, {lon}, {lat}, {temp}')
+    logger.debug(f'{data}, {lon}, {lat}, {temp}')
 
     # Меняем параметры user по его id:
     users[message.from_user.id] = {
