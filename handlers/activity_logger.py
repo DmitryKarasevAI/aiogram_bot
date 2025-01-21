@@ -40,7 +40,7 @@ async def start_form(message: Message, command: CommandObject):
                 f"Вы выпили {amount} мл. воды\n"
                 f"Суммарно за сегодня Вы выпили {curr_amount}/{total_amount} мл."
             )
-        except TypeError:
+        except (TypeError, ValueError):
             await message.reply(
                 "Введите корректное количество воды в мл."
             )
