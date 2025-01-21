@@ -61,6 +61,8 @@ async def process_city(message: Message, state: FSMContext):
     active_time = data.get("active_time")
     city = data.get("city")
 
+    print(data, weight, height, age, sex, city, active_time)
+
     coord_url = f'http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={1}&appid={WEATHER_API_TOKEN}'
 
     async with aiohttp.ClientSession() as session:
@@ -68,10 +70,14 @@ async def process_city(message: Message, state: FSMContext):
             data = (await response.json())[0]
             lon, lat = data['lon'], data['lat']
 
+    print(lon, lat)
+
     temp_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_TOKEN}'
     async with aiohttp.ClientSession() as session:
         async with session.get(temp_url) as response:
             temp = (await response.json())["main"]["temp"] - 273.15
+
+    print(temp)
 
     water_goal = int(round(30 * weight + 500 * (active_time // 30) + 500 * (temp > 25), -2))
 
