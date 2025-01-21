@@ -18,21 +18,21 @@ async def start_form(message: Message, state: FSMContext):
 
 @router.message(SetUpForm.weight)
 async def process_weight(message: Message, state: FSMContext):
-    await state.update_data(weight=message.text)
+    await state.update_data(weight=float(message.text))
     await message.reply("Введите ваш рост (в см):")
     await state.set_state(SetUpForm.height)
 
 
 @router.message(SetUpForm.height)
 async def process_height(message: Message, state: FSMContext):
-    await state.update_data(height=message.text)
+    await state.update_data(height=int(message.text))
     await message.reply("Введите ваш возраст:")
     await state.set_state(SetUpForm.age)
 
 
 @router.message(SetUpForm.age)
 async def process_age(message: Message, state: FSMContext):
-    await state.update_data(age=message.text)
+    await state.update_data(age=int(message.text))
     await message.reply("Введите ваш пол (М/Ж):")
     await state.set_state(SetUpForm.sex)
 
@@ -46,7 +46,7 @@ async def process_sex(message: Message, state: FSMContext):
 
 @router.message(SetUpForm.active_time)
 async def process_active_time(message: Message, state: FSMContext):
-    await state.update_data(active_time=message.text)
+    await state.update_data(active_time=int(message.text))
     await message.reply("В каком городе вы находитесь?")
     await state.set_state(SetUpForm.city)
 
