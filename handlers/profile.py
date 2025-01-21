@@ -76,14 +76,7 @@ async def process_city(message: Message, state: FSMContext):
     active_time = data.get("active_time")
     city = data.get("city")
 
-    coord_url = f'http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={1}&appid={WEATHER_API_TOKEN}'
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(coord_url) as response:
-            city_data = (await response.json())[0]
-            lon, lat = city_data['lon'], city_data['lat']
-
-    temp_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_TOKEN}'
+    temp_url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_TOKEN}'
     async with aiohttp.ClientSession() as session:
         async with session.get(temp_url) as response:
             temp = (await response.json())["main"]["temp"] - 273.15
@@ -93,7 +86,7 @@ async def process_city(message: Message, state: FSMContext):
     # По формуле Миффлина — Сан Жеора:
     calorie_goal = int(round(10 * weight + 6.25 * height - 5 * age + 5 * (sex == 'М') - 161 * (sex == 'Ж')))
 
-    logger.debug(f'{data}, {lon}, {lat}, {temp}')
+    logger.debug(f'{data}, {temp}')
 
     # Меняем параметры user по его id:
     users[message.from_user.id] = {
