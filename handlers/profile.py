@@ -80,8 +80,8 @@ async def process_city(message: Message, state: FSMContext):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(coord_url) as response:
-            data = (await response.json())[0]
-            lon, lat = data['lon'], data['lat']
+            city_data = (await response.json())[0]
+            lon, lat = city_data['lon'], city_data['lat']
 
     temp_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_TOKEN}'
     async with aiohttp.ClientSession() as session:
