@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from config import WEATHER_API_TOKEN
-from states import Form
+from states import SetUpForm
 from storage import users
 import aiohttp
 
@@ -13,45 +13,45 @@ router = Router()
 @router.message(Command("set_profile"))
 async def start_form(message: Message, state: FSMContext):
     await message.reply("Введите ваш вес (в кг):")
-    await state.set_state(Form.weight)
+    await state.set_state(SetUpForm.weight)
 
 
-@router.message(Form.weight)
+@router.message(SetUpForm.weight)
 async def process_weight(message: Message, state: FSMContext):
     await state.update_data(weight=message.text)
     await message.reply("Введите ваш рост (в см):")
-    await state.set_state(Form.height)
+    await state.set_state(SetUpForm.height)
 
 
-@router.message(Form.height)
+@router.message(SetUpForm.height)
 async def process_height(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await message.reply("Введите ваш возраст:")
-    await state.set_state(Form.age)
+    await state.set_state(SetUpForm.age)
 
 
-@router.message(Form.age)
+@router.message(SetUpForm.age)
 async def process_age(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await message.reply("Введите ваш пол (М/Ж):")
-    await state.set_state(Form.sex)
+    await state.set_state(SetUpForm.sex)
 
 
-@router.message(Form.sex)
+@router.message(SetUpForm.sex)
 async def process_sex(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await message.reply("Сколько минут активности у вас в день?")
-    await state.set_state(Form.active_time)
+    await state.set_state(SetUpForm.active_time)
 
 
-@router.message(Form.active_time)
+@router.message(SetUpForm.active_time)
 async def process_active_time(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     await message.reply("В каком городе вы находитесь?")
-    await state.set_state(Form.city)
+    await state.set_state(SetUpForm.city)
 
 
-@router.message(Form.city)
+@router.message(SetUpForm.city)
 async def process_city(message: Message, state: FSMContext):
     data = await state.get_data()
     weight = data.get("weight")
