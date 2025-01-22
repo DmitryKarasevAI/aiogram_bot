@@ -59,7 +59,7 @@ async def log_food(message: Message, state: FSMContext, command: CommandObject):
     else:
         food_name = command.args
         async with Translator() as translator:
-            food_name_eng = await (translator.translate(food_name, src='ru', dest='en')).text
+            food_name_eng = (await translator.translate(food_name, src='ru', dest='en')).text
 
         url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
         headers = {
