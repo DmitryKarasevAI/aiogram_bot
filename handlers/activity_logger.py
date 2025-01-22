@@ -1,7 +1,7 @@
 import io
 import matplotlib.pyplot as plt
 from aiogram import Router
-from aiogram.types import Message, InputFile
+from aiogram.types import Message, BufferedInputFile
 from aiogram.filters import Command
 from aiogram.filters.command import CommandObject
 from aiogram.fsm.context import FSMContext
@@ -215,21 +215,25 @@ async def water_graph(message: Message):
         plt.plot([i for i in range(len(water_progress))], water_progress, marker='o')
         plt.title("График потребления воды")
         plt.xlabel("Ваши замеры")
-        plt.ylabel("Потреблено воды")
+        plt.ylabel("Потреблено воды (мл.)")
 
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-
-        input_file = InputFile(buf, filename="plot.png")
-
-        await message.answer_photo(
-            photo=input_file,
-            caption="Ваше потребление воды:"
-        )
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
 
         plt.close()
 
+        plot_bytes = buffer.getvalue()
+
+        image_file = BufferedInputFile(
+            file=plot_bytes,
+            filename="plot.png"
+        )
+
+        await message.answer_photo(
+                photo=image_file,
+                caption="Ваше потребление воды"
+            )
 
 # Функция для подключения обработчиков
 def include_logging_router(dp):
