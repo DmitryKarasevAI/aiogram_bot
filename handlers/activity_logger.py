@@ -211,14 +211,18 @@ async def water_graph(message: Message):
     else:
         user_data = users[message.from_user.id]
         water_progress = user_data["water_progress"]
+        water_goal = user_data["water_goal"]
         plt.figure(figsize=(4, 3))
         plt.plot([i for i in range(len(water_progress))], water_progress, marker='o')
+        plt.axhline(y=water_goal, color='red', linestyle='--', linewidth=2)
         plt.title("График потребления воды")
         plt.xlabel("Ваши замеры")
         plt.ylabel("Потреблено воды (мл.)")
 
+        plt.tight_layout()
+
         buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
+        plt.savefig(buffer, format='png', bbox_inches='tight', dpi=100)
         buffer.seek(0)
 
         plt.close()
