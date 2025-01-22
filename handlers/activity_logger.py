@@ -155,12 +155,12 @@ async def log_workout(message: Message, command: CommandObject):
         async with Translator() as translator:
             workout_type_response_ru = (await translator.translate(workout_type_response, src='en', dest='ru')).text
         calories_burnt = response_json['exercises'][0]['nf_calories']
-        extra_water = 200 * int(time) // 30
+        extra_water = 200 * (int(time) // 30)
         users[message.from_user.id]['burnt_calories'] += calories_burnt
         if extra_water:
             await message.reply(
-                f"""{workout_type_response_ru.capitalize()} {time} минут — {calories_burnt} ккал.
-                Дополнительно: выпейте {extra_water} мл воды."""
+                f"{workout_type_response_ru.capitalize()} {time} минут — {calories_burnt} ккал.\n"
+                f"Дополнительно: выпейте {extra_water} мл воды."
             )
         else:
             await message.reply(
@@ -194,7 +194,7 @@ async def check_progress(message: Message):
             "Калории:\n"
             f"- Потреблено: {consumed_calories} ккал из {target_calories} ккал.\n"
             f"- Сожжено: {burnt_calories} ккал.\n"
-            f"- Баланс: {consumed_calories - burnt_calories} ккал.\n"
+            f"- Баланс: {round(consumed_calories - burnt_calories, 2)} ккал.\n"
         )
 
 
