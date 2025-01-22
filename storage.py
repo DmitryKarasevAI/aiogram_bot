@@ -9,6 +9,6 @@ users = {
         "calorie_goal": 2500,
         "logged_water": 500,
         "logged_calories": 1800,
-        "burned_calories": 400
+        "burnt_calories": 400
     }
 }

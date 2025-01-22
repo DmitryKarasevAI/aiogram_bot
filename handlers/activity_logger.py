@@ -155,8 +155,8 @@ async def log_workout(message: Message, command: CommandObject):
         async with Translator() as translator:
             workout_type_response_ru = (await translator.translate(workout_type_response, src='en', dest='ru')).text
         calories_burnt = response_json['exercises'][0]['nf_calories']
-        extra_water = 200 * time // 30
-        users[message.from_user.id]['burned_calories'] += calories_burnt
+        extra_water = 200 * int(time) // 30
+        users[message.from_user.id]['burnt_calories'] += calories_burnt
         if extra_water:
             await message.reply(
                 f"""{workout_type_response_ru.capitalize()} {time} минут — {calories_burnt} ккал.
