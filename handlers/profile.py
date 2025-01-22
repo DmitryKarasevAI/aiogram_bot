@@ -100,7 +100,7 @@ async def process_city(message: Message, state: FSMContext):
         "calorie_goal": calorie_goal,
         "logged_water": 0,
         "logged_calories": 0,
-        "burned_calories": 0
+        "burnt_calories": 0
     }
 
     await message.reply(
