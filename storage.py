@@ -7,8 +7,10 @@ users = {
         "city": "Paris",
         "water_goal": 2400,
         "calorie_goal": 2500,
-        "logged_water": 500,
-        "logged_calories": 1800,
-        "burnt_calories": 400
+        "logged_water": 0,
+        "logged_calories": 0,
+        "burnt_calories": 0,
+        "water_progress": [0],
+        "calorie_progress": [0]
     }
 }

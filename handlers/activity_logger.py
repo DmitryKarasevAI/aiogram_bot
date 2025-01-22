@@ -1,5 +1,7 @@
+import io
+import matplotlib.pyplot as plt
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, InputFile
 from aiogram.filters import Command
 from aiogram.filters.command import CommandObject
 from aiogram.fsm.context import FSMContext
@@ -40,6 +42,7 @@ async def log_water(message: Message, command: CommandObject):
             users[message.from_user.id]["logged_water"] += amount
             curr_amount = users[message.from_user.id]["logged_water"]
             total_amount = users[message.from_user.id]["water_goal"]
+            users[message.from_user.id]['water_progress'].append(users[message.from_user.id]['curr_amount'])
             await message.reply(
                 f"Вы выпили {amount} мл. воды\n"
                 f"Суммарно за сегодня Вы выпили {curr_amount}/{total_amount} мл."
@@ -106,6 +109,7 @@ async def process_food_weight(message: Message, state: FSMContext):
     grams = float(message.text)
     calories = round(grams / 100 * cal_100, 1)
     users[message.from_user.id]['logged_calories'] += calories
+    users[message.from_user.id]['calorie_progress'].append(users[message.from_user.id]['logged_calories'])
     await message.reply(f"Записано: {calories} ккал.")
     await state.clear()
 
@@ -196,6 +200,35 @@ async def check_progress(message: Message):
             f"- Сожжено: {burnt_calories} ккал.\n"
             f"- Баланс: {round(consumed_calories - burnt_calories, 2)} ккал.\n"
         )
+
+
+@router.message(Command("water_graph"))
+async def water_graph(message: Message):
+    if message.from_user.id not in users.keys():
+        await message.reply(
+            "Сначала создайте профиль!"
+        )
+    else:
+        user_data = users[message.from_user.id]
+        water_progress = user_data["water_progress"]
+        plt.figure(figsize=(4, 3))
+        plt.plot([i for i in range(len(water_progress))], water_progress, marker='o')
+        plt.title("График потребления воды")
+        plt.xlabel("Ваши замеры")
+        plt.ylabel("Потреблено воды")
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+
+        input_file = InputFile(buf, filename="plot.png")
+
+        await message.answer_photo(
+            photo=input_file,
+            caption="Ваше потребление воды:"
+        )
+
+        plt.close()
 
 
 # Функция для подключения обработчиков
