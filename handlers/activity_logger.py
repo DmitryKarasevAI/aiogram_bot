@@ -42,7 +42,7 @@ async def log_water(message: Message, command: CommandObject):
             users[message.from_user.id]["logged_water"] += amount
             curr_amount = users[message.from_user.id]["logged_water"]
             total_amount = users[message.from_user.id]["water_goal"]
-            users[message.from_user.id]['water_progress'].append(users[message.from_user.id]['curr_amount'])
+            users[message.from_user.id]['water_progress'].append(curr_amount)
             await message.reply(
                 f"Вы выпили {amount} мл. воды\n"
                 f"Суммарно за сегодня Вы выпили {curr_amount}/{total_amount} мл."
@@ -234,6 +234,7 @@ async def water_graph(message: Message):
                 photo=image_file,
                 caption="Ваше потребление воды"
             )
+
 
 # Функция для подключения обработчиков
 def include_logging_router(dp):
