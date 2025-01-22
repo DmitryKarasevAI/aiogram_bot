@@ -18,9 +18,6 @@ if not BOT_TOKEN:
 if not WEATHER_API_TOKEN:
     raise ValueError("Переменная окружения WEATHER_API_TOKEN не установлена!")
 
-if not TRANSLATOR_API_TOKEN:
-    raise ValueError("Переменная окружения TRANSLATOR_API_TOKEN не установлена!")
-
 if not NUTRITION_API_ID:
     raise ValueError("Переменная окружения NUTRITION_API_ID не установлена!")
 
