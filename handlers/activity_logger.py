@@ -58,38 +58,45 @@ async def log_food(message: Message, state: FSMContext, command: CommandObject):
         )
     else:
         food_name = command.args
-        async with Translator() as translator:
-            food_name_eng = (await translator.translate(food_name, src='ru', dest='en')).text
+        if food_name:
+            async with Translator() as translator:
+                food_name_eng = (await translator.translate(food_name, src='ru', dest='en')).text
 
-        url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
-        headers = {
-            "Content-Type": "application/json",
-            "x-app-id": NUTRITION_API_ID,
-            "x-app-key": NUTRITION_API_KEY
-        }
+            url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
+            headers = {
+                "Content-Type": "application/json",
+                "x-app-id": NUTRITION_API_ID,
+                "x-app-key": NUTRITION_API_KEY
+            }
 
-        payload = {
-            "query": food_name_eng
-        }
+            payload = {
+                "query": food_name_eng
+            }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, data=json.dumps(payload)) as response:
-                print(f"Status: {response.status}")
-                response_json = await response.json()
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, headers=headers, data=json.dumps(payload)) as response:
+                    print(f"Status: {response.status}")
+                    response_json = await response.json()
 
-        if response.status == 200:
-            portion_cal = response_json['foods'][0]['nf_calories']
-            portion_weight = response_json['foods'][0]['serving_weight_grams']
-            cal_100 = 100 * portion_cal / portion_weight
-            await message.reply(
-                f"{food_name.capitalize()} — {cal_100} ккал на 100 г. Сколько грамм вы съели?"
-            )
-            await state.update_data(food_name=food_name)
-            await state.set_state(FoodLogger.food_name)
-            await state.update_data(cal_100=cal_100)
-            await state.set_state(FoodLogger.cal_100)
+            if response.status == 200:
+                portion_cal = response_json['foods'][0]['nf_calories']
+                portion_weight = response_json['foods'][0]['serving_weight_grams']
+                cal_100 = round(100 * portion_cal / portion_weight, 2)
+                await message.reply(
+                    f"{food_name.capitalize()} — {cal_100} ккал на 100 г. Сколько грамм вы съели?"
+                )
+                await state.update_data(food_name=food_name)
+                await state.set_state(FoodLogger.food_name)
+                await state.update_data(cal_100=cal_100)
+                await state.set_state(FoodLogger.cal_100)
+            else:
+                await message.reply(
+                    f"Я не понимаю, что такое {food_name.capitalize()} :("
+                )
         else:
-            f"Я не понимаю, что такое {food_name.capitalize()} :("
+            await message.reply(
+                    "Введите название продукта."
+                )
 
 
 @router.message(FoodLogger.cal_100)
