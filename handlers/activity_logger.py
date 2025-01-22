@@ -110,6 +110,94 @@ async def process_food_weight(message: Message, state: FSMContext):
     await state.clear()
 
 
+@router.message(Command("log_workout"))
+async def log_workout(message: Message, command: CommandObject):
+    if message.from_user.id not in users.keys():
+        await message.reply(
+            "Сначала создайте профиль!"
+        )
+        return
+
+    if not command.args:
+        await message.reply("Введите тип тренировки и время.")
+        return
+
+    args = command.args.split()
+
+    if len(args) != 2:
+        await message.answer("Введите тип тренировки и время.")
+        return
+
+    workout_type, time = args
+    async with Translator() as translator:
+        workout_type_eng = (await translator.translate(workout_type, src='ru', dest='en')).text
+
+    url = "https://trackapi.nutritionix.com/v2/natural/exercise"
+    headers = {
+        "Content-Type": "application/json",
+        "x-app-id": NUTRITION_API_ID,
+        "x-app-key": NUTRITION_API_KEY
+    }
+
+    query = ' '.join([workout_type_eng, time, "minutes"])
+
+    payload = {
+        "query": query
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, data=json.dumps(payload)) as response:
+            print(f"Status: {response.status}")
+            response_json = await response.json()
+
+    if response.status == 200:
+        workout_type_response = response_json['exercises'][0]['name']
+        async with Translator() as translator:
+            workout_type_response_ru = (await translator.translate(workout_type_response, src='en', dest='ru')).text
+        calories_burnt = response_json['exercises'][0]['nf_calories']
+        extra_water = 200 * time // 30
+        users[message.from_user.id]['burned_calories'] += calories_burnt
+        if extra_water:
+            await message.reply(
+                f"""{workout_type_response_ru.capitalize()} {time} минут — {calories_burnt} ккал.
+                Дополнительно: выпейте {extra_water} мл воды."""
+            )
+        else:
+            await message.reply(
+                f"{workout_type_response_ru.capitalize()} {time} минут — {calories_burnt} ккал."
+            )
+    else:
+        await message.reply(
+            f"Я не понимаю, что такое {workout_type.capitalize()} :("
+        )
+
+
+@router.message(Command("check_progress"))
+async def check_progress(message: Message):
+    if message.from_user.id not in users.keys():
+        await message.reply(
+            "Сначала создайте профиль!"
+        )
+    else:
+        user_data = users[message.from_user.id]
+        consumed_water = user_data["logged_water"]
+        target_water = user_data["water_goal"]
+        consumed_calories = user_data["logged_calories"]
+        target_calories = user_data["calorie_goal"]
+        burnt_calories = user_data["burnt_calories"]
+        await message.reply(
+            "Прогресс:\n"
+            "Вода:\n"
+            f"- Выпито: {consumed_water} мл из {target_water} мл.\n"
+            f"- Осталось: {target_water - consumed_water} мл.\n"
+
+            "Калории:\n"
+            f"- Потреблено: {consumed_calories} ккал из {target_calories} ккал.\n"
+            f"- Сожжено: {burnt_calories} ккал.\n"
+            f"- Баланс: {consumed_calories - burnt_calories} ккал.\n"
+        )
+
+
 # Функция для подключения обработчиков
 def include_logging_router(dp):
     dp.include_router(router)

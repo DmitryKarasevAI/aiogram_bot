@@ -7,7 +7,6 @@ load_dotenv()
 # Чтение токенов из переменной окружения
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 WEATHER_API_TOKEN = os.getenv("WEATHER_API_TOKEN")
-TRANSLATOR_API_TOKEN = os.getenv("TRANSLATOR_API_TOKEN")
 NUTRITION_API_ID = os.getenv("NUTRITION_API_ID")
 NUTRITION_API_KEY = os.getenv("NUTRITION_API_KEY")
 
