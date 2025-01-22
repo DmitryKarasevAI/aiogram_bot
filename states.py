@@ -8,3 +8,8 @@ class SetUpForm(StatesGroup):
     sex = State()
     active_time = State()
     city = State()
+
+
+class FoodLogger(StatesGroup):
+    food_name = State()
+    cal_100 = State()
