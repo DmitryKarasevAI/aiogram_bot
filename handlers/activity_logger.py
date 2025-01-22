@@ -240,6 +240,44 @@ async def water_graph(message: Message):
             )
 
 
+@router.message(Command("calorie_graph"))
+async def calorie_graph(message: Message):
+    if message.from_user.id not in users.keys():
+        await message.reply(
+            "Сначала создайте профиль!"
+        )
+    else:
+        user_data = users[message.from_user.id]
+        calorie_progress = user_data["calorie_progress"]
+        calorie_goal = user_data["calorie_goal"]
+        plt.figure(figsize=(4, 3))
+        plt.plot([i for i in range(len(calorie_progress))], calorie_progress, marker='o')
+        plt.axhline(y=calorie_goal, color='red', linestyle='--', linewidth=2)
+        plt.title("График потребления калорий")
+        plt.xlabel("Ваши замеры")
+        plt.ylabel("Потреблено ккал.")
+
+        plt.tight_layout()
+
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png', bbox_inches='tight', dpi=100)
+        buffer.seek(0)
+
+        plt.close()
+
+        plot_bytes = buffer.getvalue()
+
+        image_file = BufferedInputFile(
+            file=plot_bytes,
+            filename="plot.png"
+        )
+
+        await message.answer_photo(
+                photo=image_file,
+                caption="Ваше потребление калорий"
+            )
+
+
 # Функция для подключения обработчиков
 def include_logging_router(dp):
     dp.include_router(router)
